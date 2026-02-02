@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Mark Harbison"]
   spec.email = ["mark@tyne-solutions.com"]
 
-  spec.summary = "Fios."
-  spec.description = "Fios."
+  spec.summary = "A data analytics framework for building charts, dashboards, and reports in Ruby."
+  spec.description = "A data analytics framework for building charts, dashboards, and reports in Ruby."
   spec.homepage = "https://github.com/CodeTectonics/fios"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
