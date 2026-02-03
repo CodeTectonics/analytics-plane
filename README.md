@@ -1,51 +1,239 @@
 # Fios
 
-TODO: Delete this and the text below, and describe your gem
+Fios is a data analytics framework for Ruby on Rails applications.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/fios`. To experiment with that code, run `bin/console` for an interactive prompt.
+It provides a structured, explicit way to define datasets, adapters, charts, reports, and dashboards — making analytics code predictable, testable, and reusable.
 
-## Getting Started
 
-## Getting Started
+## Features
 
-bundle add fios
-bin/rails generate fios:install
-bin/rails generate fios:chart Chart
-bin/rails generate fios:report Report
-bin/rails generate fios:dashboard Dashboard
-bin/rails generate fios:dataset Dataset
-bin/rails generate fios:data_source EmployeeReport
+📊 Persisted datasets with explicit metadata
+🔌 Adapters to control how data is fetched (ActiveRecord, SQL, APIs, etc.)
+📈 Chart builders for producing chart-ready data
+📑 Report builders for producing tabular data
+🧠 Registry-based architecture (no magic constants)
+⚙️ Rails generators to get started quickly
+♻️ Works with or without ActiveRecord models
 
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
-```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+Add the gem to your Gemfile:
+```
+gem "fios"
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+Then install:
+```
+bundle install
 ```
 
-## Usage
 
-TODO: Write usage instructions here
+## Getting Started
 
-## Development
+### 1. Run the installer
+```
+bin/rails generate fios:install
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+This will:
+* Add a Fios initializer
+* Set up registry hooks using config.to_prepare
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+### 2. Generate core models
 
-## Contributing
+#### Chart
+```
+bin/rails generate fios:chart Chart
+```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/fios. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/fios/blob/master/CODE_OF_CONDUCT.md).
+Creates:
+* Chart model
+* Migration
+
+#### Report
+```
+bin/rails generate fios:report Report
+```
+
+Creates:
+* Report model
+* Migration
+
+#### Dashboard
+```
+bin/rails generate fios:dashboard Dashboard
+```
+
+Creates:
+* Dashboard model
+* DashboardWidget model
+* Migrations
+
+#### Dataset
+```
+bin/rails generate fios:dataset Dataset
+```
+
+Creates:
+* Dataset model
+* Migration
+
+### 3. Generate a Dataset Definition
+```
+bin/rails generate fios:data_source EmployeeReport
+```
+
+This creates:
+
+```
+# app/datasets/employee_report.rb
+class EmployeeReport
+  include Fios::Definitions::Base
+
+  def self.dataset_key
+    :employee_report
+  end
+end
+```
+
+## Core Concepts
+
+### Dataset (Persisted)
+
+A Dataset is a persisted record that describes a data source available to the application.
+
+Schema:
+```
+t.string :slug
+t.string :name
+t.text   :description
+t.string :adapter
+```
+
+Responsibilities:
+* Identifies the Dataset Definition via slug.
+* Declares which adapter should be used.
+* Acts as the stable reference point for Charts and Reports.
+* A Dataset must always exist in the database.
+
+### Dataset Definitions
+
+A Dataset Definition is a Ruby class that represents where data comes from.
+* May be an ActiveRecord model, a database view, or a plain Ruby class
+* Must define a dataset_key
+* Is looked up using Dataset.slug
+
+```
+class EmployeeReport
+  include include Fios::Definitions::Base
+
+  def self.dataset_key
+    :employee_report
+  end
+end
+```
+
+Each Dataset Definition has exactly one corresponding Dataset record.
+
+Instantiation of Dataset Definitions (if any) is controlled entirely by the Adapter.
+
+### Adapters
+
+Adapters define how data is fetched and shaped from a Dataset Definition.
+
+Examples:
+* ActiveRecord
+* Raw SQL
+* External APIs
+* In-memory or computed datasets
+
+```
+class ActiveRecordAdapter
+  include Fios::Adapters::Base
+
+  def self.adapter_key
+    :active_record
+  end
+
+  def self.fetch_chart_data(dataset_definition, report)
+    # returns chart-ready data
+  end
+
+  def self.fetch_report_data(dataset_definition, report)
+    # returns tabular data
+  end
+end
+```
+
+Adapters are responsible for:
+* Querying
+* Aggregation
+* Filtering
+* Formatting output
+
+### Charts
+
+Charts:
+* Reference a Dataset
+* Store filters and chart configuration in configuration
+* Produce chart-ready data (series, categories, metadata)
+
+### Reports
+
+Reports:
+* Reference a Dataset
+* Store filters and column configuration in configuration
+* Produce tabular data
+
+### Registries
+
+Fios uses registries instead of global constants.
+
+```
+Fios::Definitions::Registry.definitions
+# => { employee_report: EmployeeReport }
+
+Fios::Adapters::Registry.adapters
+# => { active_record: ActiveRecordAdapter }
+```
+
+Benefits:
+* Explicit registration
+* Inspectable state
+* Predictable behavior
+* No implicit class loading
+
+## Initializer
+
+All Datasets and Adapters are registered explicitly:
+
+```
+# config/initializers/fios.rb
+Rails.application.config.to_prepare do
+  Fios::Registrar.register do
+    adapter Fios::Adapters::ActiveRecordAdapter
+    dataset EmployeeReport
+  end
+end
+```
+
+This works correctly in:
+* development (reloadable)
+* test
+* production
+
+No eager loading required.
+
+## Architecture Philosophy
+
+Fios is built around a few guiding principles:
+* Analytics logic should live outside controllers
+* Datasets should be explicit and persisted
+* Definitions describe where data comes from
+* Adapters describe how data is fetched
+* Registration should be opt-in and predictable
+* Frameworks should clarify behavior, not hide it
 
 ## License
 
