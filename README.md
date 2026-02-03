@@ -160,7 +160,7 @@ chart = Chart.create!(
     chart_type: "column",
     x_axis: { attr: "department", label: "Department" },
     y_axes: [
-      { attr: "id", label: "Employees", type: "string", aggregation: "count" }
+      { attr: "id", label: "Employees", aggregation: "count" }
     ],
     filters: [
       { attr: "job", type: "string", operator: "=", value: "Clerk" }
@@ -204,6 +204,33 @@ Result:
 
 This data can be passed directly to a frontend charting library such as Highcharts.
 
+### 6. Create a Report
+
+```
+report = Report.create!(
+  name: "Employees by Department",
+  configuration: {
+    dataset_id: Dataset.find_by!(slug: "employee_report").id,
+    aggregated: true,
+    columns: [
+      { name: "department", type: "string", selected: true, group_by: true, count: false, count_distinct: false, average: false, max: false, min: false, sum: false },
+      { name: "id", type: "string", selected: true, group_by: false, count: true, count_distinct: false, average: false, max: false, min: false, sum: false }
+    ],
+    filters: [
+      { name: "job", type: "string", operator: "=", value: "Clerk" }
+    ]
+  }
+)
+```
+
+### 7. Fetch Report Data
+
+ReportBuilder.build returns a frontend-agnostic array shaped for tabular reporting.
+
+```
+data = Fios::Builders::ReportBuilder.build(report)
+```
+
 
 ## Core Concepts
 
@@ -227,7 +254,7 @@ Responsibilities:
 
 ### Data Sources
 
-A Data Source is a Ruby class that represents where data comes from.
+A Data Source is a Ruby class that defines how a Dataset’s data is retrieved.
 * May be an ActiveRecord model, a database view, or a plain Ruby class
 * Must define a dataset_key
 * Is looked up using Dataset.slug
@@ -264,7 +291,7 @@ class ActiveRecordAdapter
     :active_record
   end
 
-  def self.fetch_chart_data(data_source, report)
+  def self.fetch_chart_data(data_source, chart)
     # returns chart-ready data
   end
 
@@ -409,4 +436,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Fios project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/fios/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Fios project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/CodeTectonics/fios/blob/master/CODE_OF_CONDUCT.md).
