@@ -392,6 +392,8 @@ Instead of hiding complexity, Fios makes analytics code:
 * structured
 * inspectable
 
+Fios is designed to make analytics code easier to change as business questions evolve, not just easier to write the first time.
+
 ### What Fios Does Differently
 
 Fios separates analytics into clear responsibilities:
@@ -417,6 +419,17 @@ Fios is designed for teams that:
 Fios is not a BI tool, a charting library, or a UI framework.
 
 It is the analytics layer that sits between your application data and whatever frontend or visualization tool you choose.
+
+### What Fios Is Not
+
+Fios is intentionally not:
+* a BI tool
+* a charting or visualization library
+* a drag-and-drop dashboard builder
+* a replacement for SQL or data warehouses
+
+Fios focuses on structuring analytics logic inside Rails applications,
+not on visualisation or end-user reporting UX.
 
 ### Philosophy
 
