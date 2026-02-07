@@ -1,4 +1,4 @@
-module Fios
+module AnalyticsPlane
   module Builders
     class ReportBuilder
       def self.build(report)
@@ -8,7 +8,7 @@ module Fios
       def self.fetch_data(report)
         report_config = report.configuration || {}
         dataset = Dataset.find(report_config['dataset_id'])
-        Fios::Services::DatasetFetcher.fetch_report_data(dataset, report)
+        AnalyticsPlane::Services::DatasetFetcher.fetch_report_data(dataset, report)
       end
 
       def self.build_csv(report)
@@ -22,7 +22,7 @@ module Fios
         report_config = report.configuration || {}
 
         dataset = Dataset.find(report_config['dataset_id'])
-        dataset_class = Fios::Services::DatasetFetcher.fetch_report_data(dataset, report)
+        dataset_class = AnalyticsPlane::Services::DatasetFetcher.fetch_report_data(dataset, report)
 
         return dataset_class.column_names if report_config['columns'].blank?
 

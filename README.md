@@ -1,12 +1,12 @@
-# Fios
+# AnalyticsPlane
 
-Fios is an opinionated analytics framework for Ruby on Rails applications.
+AnalyticsPlane is an opinionated analytics framework for Ruby on Rails applications.
 
 It provides a structured, explicit way to model analytics concerns — datasets, data sources, adapters, charts, reports, and dashboards — as first-class, persisted application concepts.
 
 The goal is not to make analytics “easy”, but to make analytics code **understandable, testable, and changeable** as applications and business questions evolve.
 
-By separating *what data exists*, *where it comes from*, and *how it is queried and presented*, Fios gives analytics logic a clear home outside controllers and one-off services, without tying it to a specific ORM, database, or frontend.
+By separating *what data exists*, *where it comes from*, and *how it is queried and presented*, AnalyticsPlane gives analytics logic a clear home outside controllers and one-off services, without tying it to a specific ORM, database, or frontend.
 
 
 ## Features
@@ -23,7 +23,7 @@ By separating *what data exists*, *where it comes from*, and *how it is queried 
 
 Add the gem to your Gemfile:
 ```
-gem "fios"
+gem "analytics_plane"
 ```
 
 Then install:
@@ -36,18 +36,18 @@ bundle install
 
 ### 1. Run the installer
 ```
-bin/rails generate fios:install
+bin/rails generate analytics_plane:install
 ```
 
 This will:
-* Add a Fios initializer
+* Add a AnalyticsPlane initializer
 * Set up registry hooks using config.to_prepare
 
 ### 2. Generate core models
 
 #### Chart
 ```
-bin/rails generate fios:chart Chart
+bin/rails generate analytics_plane:chart Chart
 ```
 
 Creates:
@@ -56,7 +56,7 @@ Creates:
 
 #### Report
 ```
-bin/rails generate fios:report Report
+bin/rails generate analytics_plane:report Report
 ```
 
 Creates:
@@ -65,7 +65,7 @@ Creates:
 
 #### Dashboard
 ```
-bin/rails generate fios:dashboard Dashboard
+bin/rails generate analytics_plane:dashboard Dashboard
 ```
 
 Creates:
@@ -75,7 +75,7 @@ Creates:
 
 #### Dataset
 ```
-bin/rails generate fios:dataset Dataset
+bin/rails generate analytics_plane:dataset Dataset
 ```
 
 Creates:
@@ -84,7 +84,7 @@ Creates:
 
 ### 3. Generate a Data Source
 ```
-bin/rails generate fios:data_source EmployeeReport
+bin/rails generate analytics_plane:data_source EmployeeReport
 ```
 
 This creates:
@@ -92,7 +92,7 @@ This creates:
 ```
 # app/datasets/employee_report.rb
 class EmployeeReport
-  include Fios::DataSources::Base
+  include AnalyticsPlane::DataSources::Base
 
   def self.dataset_key
     :employee_report
@@ -125,7 +125,7 @@ Define where the data comes from:
 ```
 # app/datasets/employee_report.rb
 class EmployeeReport
-  include Fios::DataSources::Base
+  include AnalyticsPlane::DataSources::Base
 
   def self.dataset_key
     :employee_report
@@ -144,10 +144,10 @@ This data source does not need to be an ActiveRecord model.
 Register your Data Source:
 
 ```
-# config/initializers/fios.rb
+# config/initializers/analytics_plane.rb
 Rails.application.config.to_prepare do
-  Fios::Registrar.register do
-    adapter Fios::Adapters::ActiveRecordAdapter
+  AnalyticsPlane::Registrar.register do
+    adapter AnalyticsPlane::Adapters::ActiveRecordAdapter
     data_source EmployeeReport
   end
 end
@@ -177,7 +177,7 @@ chart = Chart.create!(
 ChartBuilder.build returns a frontend-agnostic hash shaped for charting libraries.
 
 ```
-data = Fios::Builders::ChartBuilder.build(chart)
+data = AnalyticsPlane::Builders::ChartBuilder.build(chart)
 ```
 
 Result:
@@ -231,7 +231,7 @@ report = Report.create!(
 ReportBuilder.build returns a frontend-agnostic array shaped for tabular reporting.
 
 ```
-data = Fios::Builders::ReportBuilder.build(report)
+data = AnalyticsPlane::Builders::ReportBuilder.build(report)
 ```
 
 
@@ -264,7 +264,7 @@ A Data Source is a Ruby class that defines how a Dataset’s data is retrieved.
 
 ```
 class EmployeeReport
-  include Fios::DataSources::Base
+  include AnalyticsPlane::DataSources::Base
 
   def self.dataset_key
     :employee_report
@@ -288,7 +288,7 @@ Examples:
 
 ```
 class ActiveRecordAdapter
-  include Fios::Adapters::Base
+  include AnalyticsPlane::Adapters::Base
 
   def self.adapter_key
     :active_record
@@ -326,13 +326,13 @@ Reports:
 
 ### Registries
 
-Fios uses registries instead of global constants.
+AnalyticsPlane uses registries instead of global constants.
 
 ```
-Fios::DataSources::Registry.data_sources
+AnalyticsPlane::DataSources::Registry.data_sources
 # => { employee_report: EmployeeReport }
 
-Fios::Adapters::Registry.adapters
+AnalyticsPlane::Adapters::Registry.adapters
 # => { active_record: ActiveRecordAdapter }
 ```
 
@@ -347,10 +347,10 @@ Benefits:
 All Datasets and Adapters are registered explicitly:
 
 ```
-# config/initializers/fios.rb
+# config/initializers/analytics_plane.rb
 Rails.application.config.to_prepare do
-  Fios::Registrar.register do
-    adapter Fios::Adapters::ActiveRecordAdapter
+  AnalyticsPlane::Registrar.register do
+    adapter AnalyticsPlane::Adapters::ActiveRecordAdapter
     data_source EmployeeReport
   end
 end
@@ -366,7 +366,7 @@ No eager loading required.
 
 ## Architecture Philosophy
 
-Fios is built around a few guiding principles:
+AnalyticsPlane is built around a few guiding principles:
 * Analytics logic should live outside controllers
 * Datasets should be explicit and persisted
 * Data Sources describe where data comes from
@@ -375,7 +375,7 @@ Fios is built around a few guiding principles:
 * Frameworks should clarify behavior, not hide it
 
 
-## Why Fios Exists
+## Why AnalyticsPlane Exists
 
 Analytics code in Rails applications often grows organically:
 * Queries live in controllers or services
@@ -388,18 +388,18 @@ Over time, analytics becomes:
 * difficult to extend
 * risky to change
 
-Fios exists to solve this problem by making analytics a first-class, persisted concern.
+AnalyticsPlane exists to solve this problem by making analytics a first-class, persisted concern.
 
-Instead of hiding complexity, Fios makes analytics code:
+Instead of hiding complexity, AnalyticsPlane makes analytics code:
 * explicit
 * structured
 * inspectable
 
-Fios is designed to make analytics code easier to change as business questions evolve, not just easier to write the first time.
+AnalyticsPlane is designed to make analytics code easier to change as business questions evolve, not just easier to write the first time.
 
-### What Fios Does Differently
+### What AnalyticsPlane Does Differently
 
-Fios separates analytics into clear responsibilities:
+AnalyticsPlane separates analytics into clear responsibilities:
 * Datasets describe what data exists (persisted metadata)
 * Data Sources describe where data comes from
 * Adapters describe how data is fetched and shaped
@@ -413,49 +413,49 @@ This separation:
 
 ### Practical Consequences of This Design
 
-Because analytics concepts in Fios are explicit and persisted, this enables capabilities that are difficult to achieve with ad-hoc analytics code:
+Because analytics concepts in AnalyticsPlane are explicit and persisted, this enables capabilities that are difficult to achieve with ad-hoc analytics code:
 
 * Charts, reports, and dashboards can be seeded, versioned, or migrated between environments or even between applications, instead of being hard-coded.
 
-* Fios can act as a stable backend for custom chart, report, or dashboard builders, with configuration stored as data rather than Ruby code.
+* AnalyticsPlane can act as a stable backend for custom chart, report, or dashboard builders, with configuration stored as data rather than Ruby code.
 
 * Developers can reference their own data sources — ActiveRecord models, POROs, database views, or external APIs — without changing how analytics are defined or consumed.
 
 These capabilities are a direct result of treating analytics as structured application data rather than incidental code.
 
-### Who Fios Is For
+### Who AnalyticsPlane Is For
 
-Fios is designed for teams that:
+AnalyticsPlane is designed for teams that:
 * build internal tools or data-heavy applications
 * need dashboards and reports backed by real business logic
 * want to expose analytics configuration via admin UIs or builders
 * care about maintainability more than “quick charts”
 * want analytics code that survives beyond the first version
 
-Fios is not a BI tool, a charting library, or a UI framework.
+AnalyticsPlane is not a BI tool, a charting library, or a UI framework.
 
 It is the analytics layer that sits between your application data and whatever frontend or visualization tool you choose.
 
-### What Fios Is Not
+### What AnalyticsPlane Is Not
 
-Fios is intentionally not:
+AnalyticsPlane is intentionally not:
 * a BI tool
 * a charting or visualization library
 * a drag-and-drop dashboard builder
 * a replacement for SQL or data warehouses
 
-Fios focuses on structuring analytics logic inside Rails applications,
+AnalyticsPlane focuses on structuring analytics logic inside Rails applications,
 not on visualisation or end-user reporting UX.
 
 ### Philosophy
 
-Fios is built on a few core beliefs:
+AnalyticsPlane is built on a few core beliefs:
 * Analytics deserves the same structure as the rest of your application
 * Explicit registration is better than magic loading
 * Query logic should be testable Ruby code
 * Frameworks should help you understand your system, not obscure it
 
-If your analytics logic is becoming hard to reason about, Fios gives it a home.
+If your analytics logic is becoming hard to reason about, AnalyticsPlane gives it a home.
 
 
 ## License
@@ -465,4 +465,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Fios project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/CodeTectonics/fios/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the AnalyticsPlane project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/CodeTectonics/analytics_plane/blob/master/CODE_OF_CONDUCT.md).

@@ -2,7 +2,7 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in fios.gemspec
+# Specify your gem's dependencies in analytics_plane.gemspec
 gemspec
 
 gem "irb"

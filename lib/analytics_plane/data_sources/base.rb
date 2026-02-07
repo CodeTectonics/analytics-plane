@@ -1,4 +1,4 @@
-module Fios
+module AnalyticsPlane
   module DataSources
     module Base
       extend ActiveSupport::Concern

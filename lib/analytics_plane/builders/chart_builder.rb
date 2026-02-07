@@ -1,4 +1,4 @@
-module Fios
+module AnalyticsPlane
   module Builders
     class ChartBuilder
       def self.build(chart)
@@ -9,7 +9,7 @@ module Fios
       def self.fetch_data(chart)
         chart_config = chart.configuration || {}
         dataset = Dataset.find(chart_config['dataset_id'])
-        Fios::Services::DatasetFetcher.fetch_chart_data(dataset, chart)
+        AnalyticsPlane::Services::DatasetFetcher.fetch_chart_data(dataset, chart)
       end
 
       def self.parse_query_results(data)

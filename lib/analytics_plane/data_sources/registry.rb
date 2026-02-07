@@ -1,4 +1,4 @@
-module Fios
+module AnalyticsPlane
   module DataSources
     class Registry
       mattr_accessor :data_sources, default: {}

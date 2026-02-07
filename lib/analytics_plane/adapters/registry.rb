@@ -1,4 +1,4 @@
-module Fios
+module AnalyticsPlane
   module Adapters
     class Registry
       mattr_accessor :adapters, default: {}

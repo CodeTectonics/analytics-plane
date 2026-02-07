@@ -1,5 +1,5 @@
 class <%= class_name %>
-  include Fios::DataSources::Base
+  include AnalyticsPlane::DataSources::Base
 
   def self.dataset_key
     :<%= file_name %>

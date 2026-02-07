@@ -1,4 +1,4 @@
-module Fios
+module AnalyticsPlane
   module Adapters
     module ActiveRecord
       class ReportQuery

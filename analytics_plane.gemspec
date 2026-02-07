@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative "lib/fios/version"
+require_relative "lib/analytics_plane/version"
 
 Gem::Specification.new do |spec|
-  spec.name = "fios"
-  spec.version = Fios::VERSION
+  spec.name = "analytics_plane"
+  spec.version = AnalyticsPlane::VERSION
   spec.authors = ["Mark Harbison"]
   spec.email = ["mark@tyne-solutions.com"]
 
   spec.summary = "A data analytics framework for building charts, dashboards, and reports in Ruby."
   spec.description = "A data analytics framework for building charts, dashboards, and reports in Ruby."
-  spec.homepage = "https://github.com/CodeTectonics/fios"
+  spec.homepage = "https://github.com/CodeTectonics/analytics_plane"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
 
